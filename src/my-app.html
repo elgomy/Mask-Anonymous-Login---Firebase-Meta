@@ -27,6 +27,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="lazy-import" href="my-view3.html">
 <link rel="lazy-import" href="my-view404.html">
 
+<!-- Added elements -->
+
+<link rel="import" href="../elements/anonymous-login.html">
+<link rel="import" href="../elements/firebase-service.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
+
 <dom-module id="my-app">
   <template>
     <style>
@@ -68,6 +75,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
+    <firebase-service></firebase-service>
+
     <app-location
         route="{{route}}"
         url-space-regex="^[[rootPath]]">
@@ -97,7 +106,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header slot="header" condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
+            <div main-title>Mask</div>
+            <anonymous-login fbapp="{{fbapp}}"></anonymous-login>
           </app-toolbar>
         </app-header>
 
@@ -113,6 +123,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
+
+      <!--toast -->
+    <paper-toast id="positiveToast" class="positiveToast" duration="3000"></paper-toast>
+    <paper-toast id="negativeToast" class="negativeToast" duration="3000"></paper-toast>
   </template>
 
   <script>
@@ -135,6 +149,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
           rootPath: String,
+
+          // Added properties
+          fbapp: Object,
         };
       }
 
@@ -167,6 +184,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showPage404() {
         this.page = 'view404';
+      }
+
+          // Added methods
+      ready(){
+          super.ready();
+          this.addEventListener('positiveToast', e => this._openPositiveToast(e));
+          this.addEventListener('negativeToast', e => this._openNegativeToast(e));           
+      }
+
+      _openPositiveToast(e){
+          this.$.positiveToast.open();
+          this.$.positiveToast.text = e.detail
+      }
+
+       _openNegativeToast(e){
+          this.$.negativeToast.open();
+          this.$.negativeToast.text = e.detail
       }
     }
 
